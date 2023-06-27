@@ -2,6 +2,7 @@
 <html>
 <body>
 <?php
+include 'dbconnection.php';
 session_start();
 
 $uid = $_POST['userid'];
@@ -20,8 +21,20 @@ if (isset($_SESSION['lock_time']) && $_SESSION['lock_time'] > time()) {
         $passwords = explode(" ", $pw);
 
         // Define the expected password words in the right order
-        $expectedPasswords = array('ben23', 'password2', 'example123');
+        //$expectedPasswords = array('password1', 'password2', 'password3');
 
+// Perform SQL query
+$sql = "SELECT * FROM users WHERE username = '$userid'";
+$result = mysqli_query($db, $sql) or die(mysqli_error($db));
+
+// Check if a matching user was found
+if (mysqli_num_rows($result) > 0) {
+    $user = mysqli_fetch_assoc($result);
+    $expectedPasswords = $user['password'];
+
+}
+
+        
         // Check if the number of words and their order matches the expected password
         if (count($passwords) === count($expectedPasswords) && $passwords === $expectedPasswords) {
             // Reset login attempts
